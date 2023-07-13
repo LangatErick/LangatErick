@@ -1,0 +1,235 @@
+---
+title: "DIABETES PREDICTION"
+author: "Langat Erick"
+output:
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = F,message = F)
+```
+
+## **STEP-1 : Importing Diabetes Data**
+
+```{r}
+require(officer)
+library(rmarkdown)
+require(tidyverse)
+diabetes <- read.csv("D:/DATASETS/diabetes.csv")
+head(diabetes)
+```
+
+# **STEP-2 : Exploratory Data Analysis on Diabetes Data**
+
+```{r}
+#structure
+str(diabetes)
+```
+
+```{r}
+
+sum(is.na(diabetes))
+colSums(is.na(diabetes))# %>% as.data.frame()
+colnames(diabetes) %>% as.data.frame()
+```
+
+```{r}
+require(psych)
+describe(diabetes)
+```
+
+```{r}
+dim(diabetes)
+```
+
+```{r}
+#summary data
+summary(diabetes) %>% as.data.frame()
+```
+
+# **STEP-3 : Predicting Diabetes**
+
+```{r}
+#DO NOT MODIFY THIS CODE
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2) #for data visualization
+require(tidyquant)
+library(grid) # for grids
+library(gridExtra) # for arranging the grids
+library(corrplot) # for Correlation plot
+library(caret) # for confusion matrix
+library(e1071) # for naive bayes
+```
+
+\#**Plotting Histograms of Numeric Values**
+
+```{r}
+describe(diabetes)
+```
+
+```{r}
+p1<-ggplot(diabetes, aes(Pregnancies))+ 
+    geom_histogram(aes(y = 100*(..count..)/sum(..count..)),binwidth=.5,
+                   colour="orange", fill="blue")+
+                ggtitle('NO. pregnancies')+ ylab("Percentage")
+p2 <- ggplot(diabetes, aes(x=Glucose)) + ggtitle("Glucose") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth = 5, colour="black", fill="orange") + ylab("Percentage")
+p3 <- ggplot(diabetes, aes(x=BloodPressure)) + ggtitle("Blood Pressure") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth = 2, colour="black", fill="green") + ylab("Percentage")
+p4 <- ggplot(diabetes, aes(x=SkinThickness)) + ggtitle("Skin Thickness") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth = 2, colour="black", fill="pink") + ylab("Percentage")
+p5 <- ggplot(diabetes, aes(x=Insulin)) + ggtitle("Insulin") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth = 20, colour="black", fill="red") + ylab("Percentage")
+p6 <- ggplot(diabetes, aes(x=BMI)) + ggtitle("Body Mass Index") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth = 1, colour="black", fill="yellow") + ylab("Percentage")
+p7 <- ggplot(diabetes, aes(x=DiabetesPedigreeFunction)) + ggtitle("Diabetes Pedigree Function") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), colour="black", fill="purple") + ylab("Percentage")
+p8 <- ggplot(diabetes, aes(x=Age)) + ggtitle("Age") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth=1, colour="black", fill="lightblue") + ylab("Percentage")
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol=2)
+grid.rect(width = 1, height = 1, gp = gpar(lwd = 1, col = "black", fill = NA))
+```
+
+#### All the variables seem to have reasonable broad distribution, therefore, will be kept for the regression analysis.
+
+### **Correlation between Numeric Variables**
+
+Here, **sapply()** function will return the columns from the diabetes dataset which have numeric values. **cor()** function will produce correlation matrix of all those numeric columns returned by sapply(). **corrplot()** provides a visual representation of correlation matrix that supports automatic variable reordering to help detect hidden patterns among variables.
+
+```{r}
+numeric.var <- sapply(diabetes, is.numeric)
+corr.matrix <- cor(diabetes[,numeric.var])
+corrplot(corr.matrix, main="\n\nCorrelation Plot for Numerical Variables", order = "hclust", tl.col = "black", tl.srt=45, tl.cex=0.8, cl.cex=0.8)
+box(which = "outer", lty = "solid")
+```
+
+**The numeric variables are almost not correlated.**
+
+```{r}
+attach(diabetes)
+par(mfrow=c(2,4))
+boxplot(Pregnancies~Outcome, main="No. of Pregnancies vs. Diabetes", 
+        xlab="Outcome", ylab="Pregnancies",col="red")
+boxplot(Glucose~Outcome, main="Glucose vs. Diabetes", 
+        xlab="Outcome", ylab="Glucose",col="pink")
+boxplot(BloodPressure~Outcome, main="Blood Pressure vs. Diabetes", 
+        xlab="Outcome", ylab="Blood Pressure",col="green")
+boxplot(SkinThickness~Outcome, main="Skin Thickness vs. Diabetes", 
+        xlab="Outcome", ylab="Skin Thickness",col="orange")
+boxplot(Insulin~Outcome, main="Insulin vs. Diabetes", 
+        xlab="Outcome", ylab="Insulin",col="yellow")
+boxplot(BMI~Outcome, main="BMI vs. Diabetes", 
+        xlab="Outcome", ylab="BMI",col="purple")
+boxplot(DiabetesPedigreeFunction~Outcome, main="Diabetes Pedigree Function vs. Diabetes", xlab="Outcome", ylab="DiabetesPedigreeFunction",col="lightgreen")
+boxplot(Age~Outcome, main="Age vs. Diabetes", 
+        xlab="Outcome", ylab="Age",col="lightblue")
+box(which = "outer", lty = "solid")
+
+```
+
+**Blood pressure and skin thickness show little variation with diabetes, they will be excluded from the model. Other variables show more or less correlation with diabetes, so will be kept.**
+
+### **Logistic Regression**
+
+```{r}
+diabetes$BloodPressure <- NULL
+diabetes$SkinThickness <- NULL
+train <- diabetes[1:540,]
+test <- diabetes[541:768,]
+model <-glm(Outcome ~.,family=binomial,data=train)
+summary(model)
+```
+
+The top three most relevant features are "Glucose", "BMI" and "Number of times pregnant" because of the low p-values. "Insulin" and "Age" appear not statistically significant.
+
+```{r}
+anova(model, test="Chisq")
+```
+
+**From the table of deviance, we can see that adding insulin and age have little effect on the residual deviance.**
+
+### **Cross Validation**
+
+```{r}
+fitted.results <- predict(model,newdata=test,type='response')
+fitted.results <- ifelse(fitted.results > 0.5,1,0)
+(conf_matrix_logi<-table(fitted.results, test$Outcome))
+```
+
+```{r}
+# misClasificError <- mean(fitted.results == test$Outcome)
+misClasificError <- mean(fitted.results != test$Outcome)
+print(paste('Accuracy',1-misClasificError))
+```
+
+### **Decision Tree**
+
+```{r}
+library(rpart)
+model2 <- rpart(Outcome ~ Pregnancies + Glucose + BMI + DiabetesPedigreeFunction, data=train,method="class")
+plot(model2, uniform=TRUE, 
+    main="Classification Tree for Diabetes")
+text(model2, use.n=TRUE, all=TRUE, cex=.8)
+box(which = "outer", lty = "solid")
+```
+
+**This means if a person's BMI less than 45.4 and his/her Diabetes Pedigree function less than 0.8745, then the person is more likely to have diabetes.**
+
+### **\#\#\#Confusion Table and Accuracy**
+
+```{r}
+treePred <- predict(model2, test, type = 'class')
+(conf_matrix_dtree<-table(treePred, test$Outcome))
+```
+
+```{r}
+accuracy2 <- mean(treePred==test$Outcome)
+print(paste('accuracy',accuracy2))
+```
+
+### **Naive Bayes**
+
+```{r}
+# creating Naive Bayes model
+model_naive <- naiveBayes(Outcome ~., data = train)
+```
+
+### **Confusion Table and Accuracy**
+
+```{r}
+# predicting target 
+toppredict_set <- test[1:6]
+dim(toppredict_set)
+```
+
+```{r}
+preds_naive <- predict(model_naive, newdata = toppredict_set)
+(conf_matrix_naive <- table(preds_naive, test$Outcome))
+```
+
+```{r}
+accuracy3 <- mean(preds_naive==test$Outcome)
+print(paste('accuracy',accuracy3))
+```
+
+### **Conclusion**
+
+**If we compare accuracy and sensitivity level of our models to see the highest value, we can summarise as followed :**
+
+```{r}
+confusionMatrix(conf_matrix_logi)
+```
+
+```{r}
+confusionMatrix(conf_matrix_dtree)
+```
+
+```{r}
+confusionMatrix(conf_matrix_naive)
+```
+
+#### **In this project, we compared the performance of Linear Regression, Decision Tree and Naive Bayes algorithms and found that Logistic Regression performed better on this standard, unaltered dataset. After, Logistic Regression there comes Naive Bayes algorithm with more accuracy than the Decision Tree. Accuracy given by Logistic Regression was 79%, Decision Tree was 74% and Naive Bayes was 78%.**

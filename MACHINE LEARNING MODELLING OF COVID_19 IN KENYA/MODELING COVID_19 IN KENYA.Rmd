@@ -1,0 +1,110 @@
+---
+title: "COVID19 MODELLING"
+author: "LANGAT ERICK"
+date: "2023-07-22"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## MODELLING OF COVID_19 IN KENYA
+
+In this project we're going to predict the Cumulative number of covid_19 cases in Kenya
+
+```{r}
+#IMPORT LIBRARIES
+suppressPackageStartupMessages(require(webshot2))
+suppressPackageStartupMessages(require(dplyr))
+suppressPackageStartupMessages(require(officer))
+suppressPackageStartupMessages(require(modeltime))
+suppressPackageStartupMessages(require(tidymodels))
+suppressPackageStartupMessages(require(tidyverse))
+suppressPackageStartupMessages(require(timetk))
+suppressPackageStartupMessages(require(tibble))
+suppressPackageStartupMessages(require(report))
+suppressPackageStartupMessages(require(tinytex))
+suppressPackageStartupMessages(require(rmarkdown))
+```
+
+```{r}
+#LOAD DATA 
+raw <- read.csv("C:/Users/langa/OneDrive/Desktop/Dataset/owid-covid-data.csv")
+view(raw)
+```
+
+```{r}
+#CHOOSE THE LOCATION==KENYA AND CUMULATIVE CASES
+#data cleaning
+kenya_cov <- raw %>% select(location,'date', 'total_cases')%>% filter(location=="Kenya",
+                                                                      date>="2020-03-14")
+
+kenya_cov <- kenya_cov %>% select(date,total_cases ) %>% as_tibble()
+kenya_cov$date <- as.Date(kenya_cov$date)
+```
+
+```{r}
+#ADD A VISUAL
+kenya_cov %>% plot_time_series(date, total_cases, .interactive = F)
+```
+
+```{r}
+#data spliting /training$testing
+set.seed(123)
+split <- initial_time_split(kenya_cov, prop = .8)
+```
+
+```{r}
+#Define the model
+arima_spec <- arima_reg(mode = "regression") %>% 
+  set_engine(engine ="auto_arima") %>% 
+  fit(total_cases~date,training(split)) 
+```
+
+```{r}
+#fbprophet model
+prophet_model <- prophet_reg(mode = 'regression') %>% set_engine(engine = 'prophet') %>% 
+  fit(total_cases~date,training(split))
+```
+
+```{r}
+#add fitted model to table
+modeltable <- modeltime_table(arima_spec, prophet_model) 
+```
+
+```{r}
+#calibrate the model to testing set
+modelcalibrate <- modeltable %>% modeltime_calibrate(new_data = testing(split))
+```
+
+\newpage
+
+```{r}
+#visualize the forecast for the test
+modelcalibrate %>% modeltime_forecast(
+  new_data = testing(split),
+  actual_data = kenya_cov
+) %>% 
+  plot_modeltime_forecast()
+```
+
+```{r}
+#accuracy metrics
+modelcalibrate %>% modeltime_accuracy() %>% 
+     table_modeltime_accuracy()
+```
+
+\newpage
+
+```{r}
+#refit to full dataset
+refit <- modelcalibrate %>% modeltime_refit(data = kenya_cov)
+
+refit %>% modeltime_forecast(h="100 days", actual_data = kenya_cov,round(0)) %>%
+  plot_modeltime_forecast()  
+```

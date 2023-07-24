@@ -1,0 +1,132 @@
+---
+title: "Modeling Covid_19 Mortality in Kenya"
+author: "LANGAT ERICK"
+date: "2023-07-23"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Project:Machine Learning, Modeling Covid_19 Mortality Cases In Kenya
+
+```{r}
+#IMPORT LIBRARIES
+# install.packages("webshot2")
+suppressPackageStartupMessages(require(webshot2))
+suppressPackageStartupMessages(require(dplyr))
+suppressPackageStartupMessages(require(officer))
+suppressPackageStartupMessages(require(modeltime))
+suppressPackageStartupMessages(require(tidymodels))
+suppressPackageStartupMessages(require(xgboost))
+suppressPackageStartupMessages(require(tidyverse))
+suppressPackageStartupMessages(require(timetk))
+suppressPackageStartupMessages(require(tibble))
+suppressPackageStartupMessages(require(report))
+suppressPackageStartupMessages(require(tinytex))
+suppressPackageStartupMessages(require(rmarkdown))
+```
+
+```{r}
+#IMPORT DATA SETS
+kenya_d <- read.csv("C:/Users/langa/OneDrive/Desktop/Dataset/owid-covid-data.csv")
+head(kenya_d)
+```
+
+```{r}
+#DATA CLEANING
+kenya_d <-kenya_d %>% select(location, date, new_deaths) %>%
+            filter(location=='Kenya', date>="2020-03-14")
+kenya_d <- kenya_d %>% select(date, new_deaths)
+kenya_d$date <- as.Date(kenya_d$date)#character to date 
+kenya_d
+
+```
+
+```{r}
+# VISUALIZE OUR DATA TO CHECK ON THE TREND
+kenya_d %>% plot_time_series(date,new_deaths, .interactive = F)
+```
+
+```{r}
+#Data Spliting/ training /test set
+set.seed(0)
+split1 <- initial_time_split(kenya_d, prop = .75)
+train <- training(split1)
+test <- testing(split1)
+```
+
+```{r}
+#DEFINE THE MODEL
+#arima model
+arima_m <- arima_reg(mode="regression") %>% set_engine(engine = "auto_arima") %>% 
+  fit(new_deaths~date, data=train)
+arima_m
+```
+
+```{r}
+#ARIMA BOOST
+arima_boost <- arima_boost(min_n = 2, learn_rate = .5, mode = "regression") %>% 
+      set_engine(engine = "auto_arima_xgboost") %>% 
+    fit(new_deaths~date+as.numeric(date)+factor(month(date, label=TRUE),
+                                                      ordered=FALSE),
+                                                data=train)
+arima_boost
+```
+
+```{r}
+#EXPONENTIAL SMOOTHING(MODELTIME):ETS
+ets_model <- exp_smoothing(mode = 'regression') %>% set_engine(engine = "ets") %>% 
+      fit(new_deaths~date, data=train)
+ets_model
+```
+
+**ADDFITTED MODEL TO MODELTIME TABLE**
+
+```{r}
+table_model <- modeltime_table(
+  arima_m,
+  arima_boost,
+  ets_model
+)
+table_model
+```
+
+CALIBRATE MODEL TO THE TEST DATA
+
+```{r}
+calib_table <- table_model %>% modeltime_calibrate(new_data = test)
+calib_table
+```
+
+```{r}
+#TESTING SET FORECAST & ACCURACY EVALUATION
+calib_table %>% modeltime_forecast(new_data = test,
+                                   actual_data = kenya_d) %>% 
+    plot_modeltime_forecast(
+      .color_lab = "red",
+      .legend_max_width = 25,#fro mobile screens
+      .interactive = F
+    )
+```
+
+```{r}
+#ACCURACY METRICS
+calib_table %>% modeltime_accuracy() %>% table_modeltime_accuracy(
+  .interactive = T
+)
+```
+
+```{r}
+#REFIT THE MODEL TO FULL DATASET& FORECAST FORWARD
+refit_table <- calib_table %>% modeltime_refit(data = kenya_d) 
+
+refit_table %>% modeltime_forecast(h="90 days", actual_data = kenya_d) %>% plot_modeltime_forecast(
+  .interactive = F
+)
+
+```

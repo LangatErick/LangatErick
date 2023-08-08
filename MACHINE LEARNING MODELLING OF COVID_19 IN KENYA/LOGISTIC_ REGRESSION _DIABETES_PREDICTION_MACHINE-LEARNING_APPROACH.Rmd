@@ -1,0 +1,103 @@
+---
+title: "LOGISTIC REGRESSION; DIABETES PREDICTION"
+author: "LANGAT ERICK"
+date: "2023-08-06"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## IMPORT DATA
+
+```{r}
+rm( list = ls() )    # Clear Environment objects
+```
+
+```{r}
+#data
+suppressPackageStartupMessages(require(bookdown))
+suppressPackageStartupMessages(require(tidyverse))
+data <- read.csv("C:/Users/langa/OneDrive/Desktop/MACHINE LEARNING/DATASETS/diabetes.csv")
+
+```
+
+```{r}
+library(rsample)
+suppressPackageStartupMessages(require(caTools))
+set.seed(123)
+split <- initial_split(data, prop = .80, strata = Outcome)
+training <- training(split)
+testing=testing(split)
+colnames(data)
+split
+# 
+# split <- sample.split(data,SplitRatio = .8 )
+# training <- subset(data, split==TRUE)
+# testing <- subset(data, split==FALSE)
+```
+
+```{r}
+#model
+model <- glm(Outcome~., data = training, 
+             family=binomial)
+summary(model)
+```
+
+```{r}
+#optimize our model by removing less significant variables 1by1
+model <- glm(Outcome~.-SkinThickness,data=training, 
+             family=binomial)
+summary(model)
+```
+
+```{r}
+#predict
+res <- predict(model, testing, type = "response")
+# res <- ifelse(res>0.5,1,0) %>% as.data.frame()
+res
+```
+
+```{r}
+test <- testing$Outcome %>% as.data.frame()
+```
+
+```{r}
+cbind(res, test)
+```
+
+## MODEL ACCURACY
+
+```{r}
+#confusionmatrix
+suppressPackageStartupMessages(require(caret)) 
+(table <- table(testing$Outcome, res>0.5))
+
+```
+
+## HOW TO SET THE TRESHOLD
+
+```{r}
+library(ROCR)
+res1 <- predict(model, training, type = 'response')
+ROCRpred <- prediction(res1,training$Outcome)
+ROCperf <- performance(ROCRpred, 'tpr','fpr')
+plot(ROCperf, colorize=TRUE, print.cutoffs.at=seq(0.1,by=0.1))
+```
+
+```{r}
+res <- predict(model, testing, type = 'response')
+(table(testing$Outcome, res>0.5))#
+(table(testing$Outcome, res>0.3))#
+```
+
+```{r}
+#accuracy
+
+sum(91,33)/sum(91,9,21,33)
+sum(78,44)/sum(78,22,10,44)
+```

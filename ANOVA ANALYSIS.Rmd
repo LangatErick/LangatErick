@@ -1,0 +1,97 @@
+---
+title: "ANOVA"
+author: "LANGAT ERICK"
+date: "2023-08-19"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ANOVA
+
+**Research Question:** Is the life expectancy in **Asia, America & Europe different?**
+
+HO;Mean life expectancy is the same
+
+H1:Mean life expectancy is not same
+
+```{r}
+#IMPORT LIBRARIES
+library(bookdown)
+library(tidyverse)
+library(patchwork)
+library(gapminder)
+library(forcats)
+```
+
+```{r}
+#data=gapmider
+data()
+head(gapminder)
+ dim(gapminder)
+names(gapminder)
+tail(gapminder)
+view(gapminder)
+```
+
+```{r}
+#Create data to work with
+gapdata <- gapminder %>% filter(year==2007 &
+                                  continent%in% c("Americas", 'Europe', 'Asia'))%>%
+                  select(continent, lifeExp)
+
+ head(gapdata) 
+ 
+ # gapdata1 <- gapminder %>% 
+ #   filter(year==2007 &
+ #                    continent %in%c("Americas", 'Europe', 'Asia'))%>% 
+ #        select(continent, lifeExp)
+```
+
+```{r}
+#Take a look at the distribution of means
+gapdata %>% group_by(continent) %>%  summarise(Mean_life=mean(lifeExp)) %>% 
+          arrange(Mean_life)
+```
+
+```{r}
+#ANOVA MODEL
+aov_model <- aov(lifeExp~continent,gapdata) 
+summary(aov_model)  
+
+```
+
+```{r}
+(aov_model <- aov(lifeExp~continent,gapdata) %>% TukeyHSD())
+```
+
+\##**##################2nd ANOVA**
+
+```{r}
+#Data 
+data("msleep")
+dim(msleep)
+names(msleep) 
+str(msleep)
+```
+
+```{r}
+my_data <- msleep %>% select(vore, sleep_rem) %>% drop_na()
+head(my_data)
+```
+
+```{r}
+#p_value less than 0.05
+#reject H0 (Means are equal)
+#anova model
+aov_model1 <-aov(sleep_rem~vore, data = my_data)
+summary(aov_model1)
+```
+
+```{r}
+aov_model1 %>% TukeyHSD()
+```

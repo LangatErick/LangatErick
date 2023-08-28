@@ -1,5 +1,4 @@
 - 👋 Hi, I’m @LangatErick
--Name: LANGAT ERICK 
 Age: 25
 Location: NAIROBI KENYA
 

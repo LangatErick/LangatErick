@@ -1,9 +1,8 @@
-# 👋 Hi, I’m @LangatErick
-# Age: 25
+# LangatErick
 # Location: NAIROBI KENYA
 
 **Background and Expertise:**
-I am a Certified Data Scientist Professional & MEAL Specialist, focusing on machine learning and data Science. With 4+ years of experience, I am a seasoned data scientist who thrives on unraveling complex challenges. My exceptional track record includes successful projects across the e-commerce, finance, and healthcare sectors.
+I am a Certified Data Scientist Professional & MEAL Specialist, focusing on machine learning and data Science. With 4+ years of experience, I am a seasoned data scientist who thrives on unraveling complex challenges. My exceptional track record includes successful e-commerce, finance, and healthcare projects.
 
 **Technical Mastery:**
 - Proficient in Python, R, and SQL for data manipulation, analysis, and modeling.

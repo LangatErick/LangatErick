@@ -2,14 +2,20 @@
 # Location: NAIROBI KENYA
 
 **Background and Expertise:**
-I am a Certified Data Scientist Professional & MEAL Specialist, focusing on machine learning and data Science. With 4+ years of experience, I am a seasoned data scientist who thrives on unraveling complex challenges. My exceptional track record includes successful e-commerce, finance, and healthcare projects.
+Highly motivated and analytical Associate with 4 years of experience in data analysis, communication, and knowledge management. Proven ability to translate complex data into clear and actionable insights for decision-making. Passionate about using data to drive positive social impact, aligning perfectly with Evidence Action's mission. Skilled in managing data projects, building dashboards, and developing informative visualizations using Power BI, Tableau, and design software. Eager to contribute to the MLE-Delivery team and empower program teams with data-driven solutions.
 
 **Technical Mastery:**
 - Proficient in Python, R, and SQL for data manipulation, analysis, and modeling.
-- Exceptional skill in crafting machine learning models, leveraging both supervised and unsupervised techniques.
+- Advanced knowledge of designing/scripting electronic data collection tools using SurveyCTO, Kobo, and ODK.
+- Data Cleaning, Management & Reporting: Data Strategy, Data Collection & Cleaning, Database Management (MySQL, SQL), Data Warehousing, ETL Processes, M&E Reporting.
+- Data Analysis & Visualization: Statistical Analysis (R, Python), Data Visualization Tools (Power BI, Tableau)
+-	Technical Expertise: Strong knowledge of data analytics tools including Excel, Python, R, and SQL. 
+-	Communication & Collaboration: Clear & Concise Reporting, Training & Capacity Building, Stakeholder Management
+-	Problem-Solving & Innovation: Identifying Data Challenges, Recommending Solutions, Designing Intelligent Analytics
+-	Project Management: Delivering on deadlines, Owning Projects.
+- Exceptional skill in crafting machine learning models, leveraging supervised and unsupervised techniques.
 - Mastery of data visualization tools like Matplotlib, Seaborn, and D3.js to weave compelling narratives from data.
-- Extensive experience with cloud platforms like AWS, Google Cloud, and Azure for scalable data solutions.
-- Adept with big data technologies including Hadoop, Spark, and Hive.
+
 
 **Analytical Prowess:**
 I excel at:

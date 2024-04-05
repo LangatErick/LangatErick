@@ -1,12 +1,11 @@
 # LangatErick
-# Location: NAIROBI KENYA
 
-**Background and Expertise:**
-Highly motivated and analytical Associate with 4 years of experience in data analysis, communication, and knowledge management. Proven ability to translate complex data into clear and actionable insights for decision-making. Passionate about using data to drive positive social impact, aligning perfectly with Evidence Action's mission. Skilled in managing data projects, building dashboards, and developing informative visualizations using Power BI, Tableau, and design software. Eager to contribute to the MLE-Delivery team and empower program teams with data-driven solutions.
+## Background and Expertise:
+Highly motivated and analytical Associate with 4 years of experience in data analysis, communication, and knowledge management. Proven ability to translate complex data into clear and actionable insights for decision-making. Passionate about using data to drive positive social impact. Skilled in managing data projects, building dashboards, and developing informative visualizations using Power BI, Tableau, and design software. Eager to contribute to the MLE-Delivery team and empower program teams with data-driven solutions.
 
 **Technical Mastery:**
 - Proficient in Python, R, and SQL for data manipulation, analysis, and modeling.
-- Advanced knowledge of designing/scripting electronic data collection tools using SurveyCTO, Kobo, and ODK.
+- Advanced knowledge of designing/scripting electronic data collection tools using SurveyCTO, KoboCollect, and ODK.
 - Data Cleaning, Management & Reporting: Data Strategy, Data Collection & Cleaning, Database Management (MySQL, SQL), Data Warehousing, ETL Processes, M&E Reporting.
 - Data Analysis & Visualization: Statistical Analysis (R, Python), Data Visualization Tools (Power BI, Tableau)
 -	Technical Expertise: Strong knowledge of data analytics tools including Excel, Python, R, and SQL. 

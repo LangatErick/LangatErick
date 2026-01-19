@@ -1,7 +1,7 @@
 # LangatErick
 
 ## Background and Expertise:
-Highly motivated and analytical Associate with 4 years of experience in data analysis, communication, and knowledge management. Proven ability to translate complex data into clear and actionable insights for decision-making. Passionate about using data to drive positive social impact. Skilled in managing data projects, building dashboards, and developing informative visualizations using Power BI, Tableau, and design software. Eager to contribute to the MLE-Delivery team and empower program teams with data-driven solutions.
+Highly motivated and analytical Associate with experience in **Data Science and  Analysis**, communication, and knowledge management. Proven ability to translate complex data into clear and actionable insights for decision-making. Passionate about using data to drive positive social impact. Skilled in managing data projects, building dashboards, and developing informative visualizations using Power BI, Tableau, and design software. Eager to contribute to the MLE-Delivery team and empower program teams with data-driven solutions.
 
 **Technical Mastery:**
 - Proficient in Python, R, and SQL for data manipulation, analysis, and modeling.
